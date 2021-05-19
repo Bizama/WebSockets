@@ -26,7 +26,18 @@
         :center="[-33.8, -70.803203]"
         ref="myMap">
          <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+         <l-marker
+            v-for="(airport, index) in airports"
+            :key="`ai-${index}`"
+            :lat-lng="airport"
+          ></l-marker>
          <l-control-layers />
+         <LPolyline 
+          v-for="(poly, index) in theoricalPath"
+          :key="`p-${index}`"
+          :lat-lngs="poly.latlngs"
+          :color="poly.color"
+         />
        </l-map>
     </div>
     <div style="margin-top:32px">
@@ -71,7 +82,7 @@
             messages: [],
             nickname: '',
             flights: [],
-
+            planes: [],
           }  
         }, 
         created() {
@@ -94,9 +105,16 @@
             }
           );
           this.socket.once('FLIGHTS', data => {
-            console.log(data);
             this.flights.push(data);
-            console.log(this.flights);
+
+            this.planes = this.flights[0].map((f) => {
+              return {
+                code: f.code,
+                position: [...f.origin],
+                destination: [...f.destination],
+              };
+            })
+            console.log(this.planes);
           });
         },
         methods: {
@@ -115,7 +133,27 @@
           changeNickname: function() {
             this.nickname = this.nickname_aux 
           }
-        }
+        },
+        computed: {
+          airports: function() {
+            return new Set(
+              this.flights[0].map((f) => {
+                const coords = [...f.origin];
+                const coords2 = [...f.destination];
+                return [coords, coords2];
+              }).flat()
+            );
+          },
+          theoricalPath: function() {
+            return this.flights[0].map((f)=> {
+              return {
+                latlngs: [[...f.origin], [...f.destination]],
+                color: '#14B8A6'
+              };
+            });
+          },
+        },
+        
     }
 </script>
 
