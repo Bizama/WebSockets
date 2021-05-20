@@ -31,6 +31,15 @@
             :key="`ai-${index}`"
             :lat-lng="airport"
           ></l-marker>
+         <l-marker
+          v-for="(plane, index) in planes"
+          :key="`pls-${index}`"
+          :lat-lng="plane.position"
+         >
+          <l-tooltip :options="{ offset: [12, 24] }">
+            {{ plane.code }}
+          </l-tooltip>
+         </l-marker>
          <l-control-layers />
          <LPolyline 
           v-for="(poly, index) in theoricalPath"
@@ -64,6 +73,7 @@
         LTooltip,
         LPolyline,
     } from "@vue-leaflet/vue-leaflet";
+    import L from 'leaflet';
 
     export default {
         components: {
@@ -91,8 +101,12 @@
         mounted() {
           // this.context = this.$refs.game.getContext("2d");
           this.socket.on('POSITION', data => {
-            console.log(data);
-
+            this.planes = this.planes.map((p) => {
+              if (data.code === p.code) {
+                p.position = data.position;
+              }
+              return p;
+            });
           });
           this.socket.on('CHAT', data => {
             const message_date = new Date(data.date);
@@ -112,6 +126,11 @@
                 code: f.code,
                 position: [...f.origin],
                 destination: [...f.destination],
+                icon: L.icon({
+                  iconUrl: `../src/assets/logo.png`,
+                  iconSize: [64, 64],
+                  iconAnchor: [32, 32],
+                })
               };
             })
             console.log(this.planes);
