@@ -14,7 +14,12 @@
             <li v-for="passenger in flight_list['passengers']" :key="passenger">
                 <ul>{{ passenger.name }} - {{ passenger.age }}</ul>
             </li>
-            
+        </div>
+        <div>
+            <span>Origen: {{ flight_list['origin'] }}</span>
+            <br />
+            <span>Destino: {{ flight_list['destination'] }}</span>
+
         </div>
     </div>
 </template>

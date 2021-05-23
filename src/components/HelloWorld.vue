@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Chat Room Section</h1>   
+    <h1>Websocket Airlines Information</h1>   
     <div> 
       <ul ref="chatbox" class="chatbox-container" id="chatbox">
         <li v-for="message in messages" :key="message.name" class="list">
@@ -14,7 +14,7 @@
       <form @submit.prevent="changeNickname" v-else>
         <span>Introduzca un nickname para chatear</span>
         <br>
-        <input type="text" placeholder="Escriba su nickname..." v-model="nickname_aux" />
+        <input type="text"  class="chatbox-input" placeholder="Escriba su nickname..." v-model="nickname_aux" />
         <input type="submit" value="Ingresar" /> 
       </form>
     </div>
