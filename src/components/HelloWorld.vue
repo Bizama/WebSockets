@@ -47,6 +47,12 @@
           :lat-lngs="poly.latlngs"
           :color="poly.color"
          />
+         <LPolyline 
+          v-for="(line, index) in actualPath"
+          :key="`l-${index}`" 
+          :lat-lngs="line.latlngs"
+          :color="line.color"
+          />
        </l-map>
     </div>
     <div style="margin-top:32px">
@@ -83,6 +89,7 @@
           LPolyline,
           LTooltip,
           FlightsInfo,
+          LControlLayers,
         },
         name: 'HelloWorld',
         data() {
@@ -97,6 +104,23 @@
         }, 
         created() {
           this.socket = io("ws://tarea-3-websocket.2021-1.tallerdeintegracion.cl", {path: '/flights'});
+          this.socket.emit('FLIGHTS');
+          this.socket.once('FLIGHTS', data => {
+            this.flights.push(data);
+            this.planes = this.flights[0].map((f) => {
+              return {
+                code: f.code,
+                position: [...f.origin],
+                initial_position: [...f.origin],
+                destination: [...f.destination],
+                icon: L.icon({
+                  iconUrl: `../src/assets/logo.png`,
+                  iconSize: [64, 64],
+                  iconAnchor: [32, 32],
+                })
+              };
+            })
+          });
         },
         mounted() {
           // this.context = this.$refs.game.getContext("2d");
@@ -104,6 +128,9 @@
             this.planes = this.planes.map((p) => {
               if (data.code === p.code) {
                 p.position = data.position;
+                if (p.initial_position[0] == 0) {
+                  p.initial_position = p.position;
+                }
               }
               return p;
             });
@@ -125,6 +152,7 @@
               return {
                 code: f.code,
                 position: [...f.origin],
+                initial_position: [0,0],
                 destination: [...f.destination],
                 icon: L.icon({
                   iconUrl: `../src/assets/logo.png`,
@@ -171,8 +199,15 @@
               };
             });
           },
-        },
-        
+          actualPath: function() {
+            return this.planes.map((p) => {
+              return {
+                latlngs: [[...p.initial_position], [...p.position]],
+                color: '#b314b8'
+              };
+            });
+          },
+        },  
     }
 </script>
 

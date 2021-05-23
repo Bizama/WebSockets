@@ -10,7 +10,11 @@
             <span>{{ flight_list['plane'] }}</span>
         </div> 
         <div>
-            <span>{{ flight_list['passengers']}}</span>
+            <span>Pasajeros: </span>
+            <li v-for="passenger in flight_list['passengers']" :key="passenger">
+                <ul>{{ passenger.name }} - {{ passenger.age }}</ul>
+            </li>
+            
         </div>
     </div>
 </template>
