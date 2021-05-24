@@ -103,7 +103,7 @@
           }  
         }, 
         created() {
-          this.socket = io("ws://tarea-3-websocket.2021-1.tallerdeintegracion.cl", {path: '/flights'});
+          this.socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl", {path: '/flights'});
           this.socket.emit('FLIGHTS');
           this.socket.once('FLIGHTS', data => {
             this.flights.push(data);
